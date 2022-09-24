@@ -1,0 +1,145 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block head %}
+<style>
+    #back_course {
+        background-color: rgb(33, 33, 33);
+        color: white;
+        padding: 6px;
+        margin-bottom: 6px;
+        transition: all 0.2s;
+        display: inline-block;
+    }
+
+    #back_course:hover {
+        transform: scale(1.1);
+    }
+
+    a:hover {
+        text-decoration: none;
+    }
+
+    a:visited {
+        color: white;
+    }
+    
+    #postimage:visited {
+        color: blue;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div id="back_course">
+    <a href="{% url 'view_course' lesson.course.id %}">Back to Course</a>
+</div>
+<br>
+
+{% if lesson != curr_lesson and lesson not in user.completed_lessons.all %}
+
+<h1>Please complete previous lessons first!</h1>
+
+{% else %}
+
+<h1>{{ lesson }}</h1>
+
+<div>
+    {{ lesson_description | safe }}
+</div>
+<select class="form-select" id="language">
+    <option selected value="none">Select a language</option>
+    {% if lesson.course.language == "all" %}
+    <option value="python3">Python 3</option>
+    <option value="cpp17">C++</option>
+    <option value="nodejs">NodeJS</option>
+    <option value="java">Java</option>
+    {% else %}
+    <option value="{{ lesson.course.language }}">{{ lesson.course.language }}</option>
+    {% endif %}
+</select>
+<select class="form-select" style="margin: 10px;" id="themeChange">
+    <option selected value="solarized light">Light</option>
+    <option value="material">Dark</option>
+</select>
+<button id="increaseText">text++</button>
+<button id="decreaseText">text--</button>
+
+<textarea id="editor" style="height: auto;">
+// Enter your code here
+</textarea>
+<!-- n = input()
+ans = 0
+for i in range(int(n)):
+	ans += int(input())
+print(ans) -->
+
+<br>
+<div class="d-flex justify-content-end">
+    <p id="timeMem"></p>
+</div>
+<div class="d-flex justify-content-between">
+    <textarea name="" id="customInput" cols="30" rows="5" placeholder="Custom input..."
+        style="width: 49%; padding: 10px;"></textarea>
+    <div style="width: 49%; border: 1px solid black; padding:10px" id="customOut">
+        Custom Output...
+        <div id="customLoad" class="fa-4x d-flex justify-content-center align-items-center"
+            style="height: 100%; visibility: hidden;">
+            <i class="fas fa-sync fa-spin"></i>
+        </div>
+    </div>
+</div>
+<br>
+
+<p>Image to code:</p>
+<div class="input-group mb-3">
+    <input type="text" class="form-control" id="imageURL" placeholder="Enter image URL here" aria-describedby="basic-addon2">
+    <div class="input-group-append">
+      <button class="btn btn-outline-secondary" type="button" id="imgtotext">Submit</button>
+    </div>
+</div>
+<p>You can visit <a href="https://postimages.org/" target="_blank" id="postimage">postimage</a> to upload your code image to get url. (copy direct link)</p>
+
+<div id='image'>
+    <!-- <img width= "100%" src="https://i.postimg.cc/VvvMcFq3/6-Final.png"> -->
+</div>
+<br>
+
+<div class="d-flex justify-content-between">
+    <div>
+        {% if prev_lesson %}
+        <a href="{% url 'view_lesson' prev_lesson.id %}" class="btn btn-primary">Previous Lesson</a>
+        {% endif %}
+        {% if next_lesson %}
+        <a href="{% url 'view_lesson' next_lesson.id %}" class="btn btn-primary">Next Lesson</a>
+        {% endif %}
+    </div>
+
+    <div>
+        <button class="btn btn-danger" id="runcode">Run</button>
+        <button class="btn btn-success" id="submitcode">Submit</button>
+    </div>
+
+</div>
+
+<hr><br>
+
+<link rel="stylesheet" href="{% static 'codemirror/lib/codemirror.css' %}">
+<script src="{% static 'codemirror/lib/codemirror.js' %}"></script>
+
+<link rel="stylesheet" href="{% static 'codemirror/theme/solarized.css' %}">
+<link rel="stylesheet" href="{% static 'codemirror/theme/material.css' %}">
+
+<script src="{% static 'codemirror/mode/python/python.js' %}"></script>
+<script src="{% static 'codemirror/mode/clike/clike.js' %}"></script>
+<script src="{% static 'codemirror/mode/javascript/javascript.js' %}"></script>
+
+<script src="{% static 'lesson_view.js' %}"></script>
+<script>
+    let lessonId = "{{ lesson.id }}";
+    let nextLesson = "{{ next_lesson }}";
+</script>
+
+
+{% endif %}
+{% endblock %}
